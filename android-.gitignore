@@ -1,0 +1,78 @@
+## ======================
+## CineSwipe Android App
+## .gitignore
+## ======================
+
+# -------------------------
+# Build output
+# -------------------------
+build/
+*/build/
+out/
+
+# -------------------------
+# Gradle
+# -------------------------
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+local.properties
+*.hprof
+
+# -------------------------
+# Android Studio / IntelliJ
+# -------------------------
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+captures/
+.externalNativeBuild/
+.cxx/
+
+# -------------------------
+# Generated files
+# -------------------------
+gen/
+generated/
+R.java
+
+# -------------------------
+# Signing & Secrets
+# -------------------------
+*.jks
+*.keystore
+keystore.properties
+google-services.json
+secrets.properties
+
+# -------------------------
+# Logs & Diagnostics
+# -------------------------
+*.log
+logs/
+
+# -------------------------
+# OS generated
+# -------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+._*
+
+# -------------------------
+# NDK / Native
+# -------------------------
+obj/
+*.o
+*.a
+*.so
+
+# -------------------------
+# Test results
+# -------------------------
+test-results/
+*.xml
+reports/
