@@ -1,15 +1,14 @@
 package com.example.cineswipe
 
+import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.POST
 
 interface MoviesApi {
 
-    @GET("movies/random")
-    suspend fun getRandomMovie(): Movie
+    @GET("movies")
+    suspend fun getAllMovies(): List<Movie>
 
-    @GET("movies/search")
-    suspend fun searchMovies(
-        @Query("query") query: String
-    ): List<Movie>
+    @POST("watchlist")
+    suspend fun addToWatchlist(@Body item: WatchlistItem)
 }

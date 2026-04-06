@@ -6,9 +6,9 @@ import org.junit.Test
 class ApiTest {
 
     @Test
-    fun testRandomMovieApi() = runBlocking {
-        val movie = RetrofitClient.api.getRandomMovie()
-        println("Random movie: ${movie.title}")
-        assert(movie.title.isNotEmpty())
+    fun testGetAllMoviesApi() = runBlocking {
+        val movies = RetrofitClient.api.getAllMovies()
+        println("Movies fetched: ${movies.size}")
+        assert(movies.isNotEmpty())
     }
 }

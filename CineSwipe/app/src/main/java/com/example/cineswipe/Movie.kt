@@ -1,6 +1,5 @@
 package com.example.cineswipe
 
-
 data class Movie(
     val id: Int,
     val title: String,
@@ -9,4 +8,8 @@ data class Movie(
     val rating: Double
 )
 
+data class WatchlistItem(
+    val movieId: Int,
+    val userId: String
+)
 

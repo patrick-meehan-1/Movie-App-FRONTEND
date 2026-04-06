@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -21,12 +21,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cineswipe.ui.theme.CineSwipeTheme
+import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+
+const val USER_ID = "user1"
+const val SWIPE_THRESHOLD = 300f
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,55 +50,91 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-val hardcodedMovie = Movie(
-    id = 1,
-    title = "Inception",
-    genre = "Sci-Fi / Thriller",
-    posterUrl = "",
-    rating = 8.8
-)
-
 @Composable
 fun SwipeScreen() {
+    var movies by remember { mutableStateOf<List<Movie>>(emptyList()) }
+    var currentIndex by remember { mutableIntStateOf(0) }
+    var isLoading by remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        try {
+            movies = RetrofitClient.api.getAllMovies().shuffled()
+        } catch (_: Exception) {}
+        isLoading = false
+    }
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        MovieCard(movie = hardcodedMovie)
+        when {
+            isLoading -> CircularProgressIndicator()
+            currentIndex >= movies.size -> Text("You've seen everything!", fontSize = 18.sp)
+            else -> key(movies[currentIndex].id) {
+                MovieCard(
+                    movie = movies[currentIndex],
+                    onSwipeLeft = {
+                        scope.launch {
+                            try {
+                                RetrofitClient.api.addToWatchlist(WatchlistItem(movies[currentIndex].id, USER_ID))
+                            } catch (_: Exception) {}
+                            currentIndex++
+                        }
+                    },
+                    onSwipeRight = { currentIndex++ }
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun MovieCard(movie: Movie) {
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    val animatedOffsetX by animateFloatAsState(
-        targetValue = offsetX,
-        animationSpec = spring(),
-        label = "cardOffset"
-    )
+fun MovieCard(movie: Movie, onSwipeLeft: () -> Unit, onSwipeRight: () -> Unit) {
+    val offsetX = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
 
-    val swipeThreshold = 300f
-    val tintAlpha = (kotlin.math.abs(animatedOffsetX) / swipeThreshold).coerceIn(0f, 0.6f)
-    val rotation = (animatedOffsetX / 30f).coerceIn(-15f, 15f)
-    val isLeft = animatedOffsetX < 0
+    val tintAlpha = (kotlin.math.abs(offsetX.value) / SWIPE_THRESHOLD).coerceIn(0f, 0.6f)
+    val rotation = (offsetX.value / 30f).coerceIn(-15f, 15f)
+    val isLeft = offsetX.value < 0
 
     Box(
         modifier = Modifier
             .width(320.dp)
             .height(480.dp)
-            .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
+            .offset { IntOffset(offsetX.value.roundToInt(), 0) }
             .rotate(rotation)
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF5C6BC0))
-            .pointerInput(Unit) {
+            .background(Color(0xFF1a1a1a))
+            .pointerInput(movie.id) {
                 detectDragGestures(
-                    onDragEnd = { offsetX = 0f },
-                    onDragCancel = { offsetX = 0f },
+                    onDragEnd = {
+                        scope.launch {
+                            when {
+                                offsetX.value < -SWIPE_THRESHOLD -> {
+                                    offsetX.animateTo(-2000f, spring())
+                                    onSwipeLeft()
+                                }
+                                offsetX.value > SWIPE_THRESHOLD -> {
+                                    offsetX.animateTo(2000f, spring())
+                                    onSwipeRight()
+                                }
+                                else -> offsetX.animateTo(0f, spring())
+                            }
+                        }
+                    },
+                    onDragCancel = { scope.launch { offsetX.animateTo(0f, spring()) } },
                     onDrag = { change, dragAmount ->
                         change.consume()
-                        offsetX += dragAmount.x
+                        scope.launch { offsetX.snapTo(offsetX.value + dragAmount.x) }
                     }
                 )
             }
     ) {
-        // Swipe tint overlay
+        AsyncImage(
+            model = movie.posterUrl,
+            contentDescription = movie.title,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
         if (tintAlpha > 0f) {
             Box(
                 modifier = Modifier
@@ -102,7 +143,6 @@ fun MovieCard(movie: Movie) {
             )
         }
 
-        // Swipe icon
         if (tintAlpha > 0.1f) {
             Icon(
                 imageVector = if (isLeft) Icons.Filled.Bookmark else Icons.Filled.Close,
@@ -115,7 +155,6 @@ fun MovieCard(movie: Movie) {
             )
         }
 
-        // Movie info at bottom
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -127,13 +166,5 @@ fun MovieCard(movie: Movie) {
             Text(text = movie.genre, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
             Text(text = "⭐ ${movie.rating}", color = Color.White, fontSize = 14.sp)
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewSwipeScreen() {
-    CineSwipeTheme {
-        SwipeScreen()
     }
 }
