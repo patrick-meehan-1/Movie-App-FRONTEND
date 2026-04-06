@@ -9,6 +9,7 @@ data class Movie(
 )
 
 data class WatchlistItem(
+    val id: Int = 0,
     val movieId: Int,
     val userId: String
 )

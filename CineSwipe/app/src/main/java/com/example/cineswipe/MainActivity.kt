@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 if (showLanding) {
                     LandingPage(onStartClick = { showLanding = false })
                 } else {
-                    SwipeScreen()
+                    MainScreen()
                 }
             }
         }
@@ -51,11 +52,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SwipeScreen() {
+fun MainScreen() {
+    var selectedTab by remember { mutableIntStateOf(0) }
     var movies by remember { mutableStateOf<List<Movie>>(emptyList()) }
-    var currentIndex by remember { mutableIntStateOf(0) }
     var isLoading by remember { mutableStateOf(true) }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         try {
@@ -63,6 +63,36 @@ fun SwipeScreen() {
         } catch (_: Exception) {}
         isLoading = false
     }
+
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    icon = { Icon(Icons.Filled.Movie, contentDescription = "Swipe") },
+                    label = { Text("Swipe") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    icon = { Icon(Icons.Filled.Bookmark, contentDescription = "Watchlist") },
+                    label = { Text("Watchlist") }
+                )
+            }
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            if (selectedTab == 0) SwipeScreen(movies, isLoading)
+            else WatchlistScreen(movies)
+        }
+    }
+}
+
+@Composable
+fun SwipeScreen(movies: List<Movie>, isLoading: Boolean) {
+    var currentIndex by remember { mutableIntStateOf(0) }
+    val scope = rememberCoroutineScope()
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when {
@@ -74,7 +104,7 @@ fun SwipeScreen() {
                     onSwipeLeft = {
                         scope.launch {
                             try {
-                                RetrofitClient.api.addToWatchlist(WatchlistItem(movies[currentIndex].id, USER_ID))
+                                RetrofitClient.api.addToWatchlist(WatchlistItem(movieId = movies[currentIndex].id, userId = USER_ID))
                             } catch (_: Exception) {}
                             currentIndex++
                         }
