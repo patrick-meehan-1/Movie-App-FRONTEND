@@ -11,7 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.GlobalScope
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.Alignment
+import coil.compose.AsyncImage
+
 import androidx.compose.ui.tooling.preview.Preview
 
 @Preview(showBackground = true)
@@ -27,11 +35,18 @@ fun SearchScreen(onMovieClick: (Movie) -> Unit) {
     var results by remember { mutableStateOf<List<Movie>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF141414))
+            .padding(16.dp)
+    ) {
+
+
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
-            label = { Text("Search movies") },
+            placeholder = { Text("Search movies", color = Color(0xFFB3B3B3)) },
             trailingIcon = {
                 IconButton(onClick = {
                     isSearching = true
@@ -40,18 +55,38 @@ fun SearchScreen(onMovieClick: (Movie) -> Unit) {
                         isSearching = false
                     }
                 }) {
-                    Icon(Icons.Filled.Search, contentDescription = "Search")
+                    Icon(
+                        Icons.Filled.Search,
+                        contentDescription = "Search",
+                        tint = Color(0xFFE50914)
+                    )
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp)),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFE50914),
+                unfocusedBorderColor = Color(0xFF333333),
+                cursorColor = Color(0xFFE50914),
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         if (isSearching) {
-            CircularProgressIndicator()
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFFE50914))
+            }
         } else {
-            LazyColumn {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 items(results) { movie ->
                     SearchResultItem(movie = movie, onClick = { onMovieClick(movie) })
                 }
@@ -60,16 +95,64 @@ fun SearchScreen(onMovieClick: (Movie) -> Unit) {
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun SearchResultItem(movie: Movie, onClick: () -> Unit) {
-    Text(
-        text = movie.title,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp)
-            .clickable { onClick() }
+fun SearchResultItemPreview() {
+    SearchResultItem(
+        movie = Movie(
+            id = 1,
+            title = "Preview Movie",
+            genre = "Action",
+            rating = 8.5,
+            posterUrl = "https://via.placeholder.com/300"
+        ),
+        onClick = {}
     )
 }
+
+@Composable
+fun SearchResultItem(movie: Movie, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFF1A1A1A))
+            .clickable { onClick() }
+            .padding(10.dp)
+    ) {
+        AsyncImage(
+            model = movie.posterUrl,
+            contentDescription = movie.title,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(90.dp)
+                .clip(RoundedCornerShape(8.dp))
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = movie.title,
+                color = Color.White,
+                fontSize = 18.sp
+            )
+            Text(
+                text = movie.genre,
+                color = Color(0xFFB3B3B3),
+                fontSize = 14.sp
+            )
+            Text(
+                text = "⭐ ${movie.rating}",
+                color = Color.White,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+
 
 fun searchMovies(query: String, onResult: (List<Movie>) -> Unit) {
     kotlinx.coroutines.GlobalScope.launch {

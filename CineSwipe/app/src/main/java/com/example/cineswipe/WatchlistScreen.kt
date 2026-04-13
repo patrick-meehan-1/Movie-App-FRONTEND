@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 
 
@@ -50,15 +51,25 @@ fun WatchlistScreen(allMovies: List<Movie>) {
         allMovies.find { it.id == item.movieId }
     }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF141414)),
+        contentAlignment = Alignment.Center
+    ) {
         when {
-            isLoading -> CircularProgressIndicator()
-            watchlistMovies.isEmpty() -> Text("Your watchlist is empty.", fontSize = 18.sp)
+            isLoading -> CircularProgressIndicator(color = Color(0xFFE50914))
+            watchlistMovies.isEmpty() -> Text(
+                "Your watchlist is empty.",
+                fontSize = 18.sp,
+                color = Color.White
+            )
+
             else -> LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(watchlistMovies) { movie ->
@@ -69,13 +80,15 @@ fun WatchlistScreen(allMovies: List<Movie>) {
     }
 }
 
+
 @Composable
 fun WatchlistCard(movie: Movie) {
     Box(
         modifier = Modifier
             .aspectRatio(0.67f)
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF1a1a1a))
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(12.dp, RoundedCornerShape(16.dp), clip = false)
+            .background(Color(0xFF1A1A1A))
     ) {
         AsyncImage(
             model = movie.posterUrl,
@@ -83,18 +96,39 @@ fun WatchlistCard(movie: Movie) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f)),
+                        startY = 200f
+                    )
+                )
+        )
+
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                .background(Color.Black.copy(alpha = 0.6f))
-                .padding(8.dp)
+                .padding(10.dp)
         ) {
-            Text(text = movie.title, color = Color.White, fontSize = 13.sp)
-            Text(text = "⭐ ${movie.rating}", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+            Text(
+                text = movie.title,
+                color = Color.White,
+                fontSize = 14.sp
+            )
+            Text(
+                text = "⭐ ${movie.rating}",
+                color = Color(0xFFB3B3B3),
+                fontSize = 12.sp
+            )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

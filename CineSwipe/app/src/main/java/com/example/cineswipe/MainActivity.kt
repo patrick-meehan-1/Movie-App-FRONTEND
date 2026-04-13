@@ -32,6 +32,11 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.draw.shadow
+
+
+
+
 const val USER_ID = "user1"
 const val SWIPE_THRESHOLD = 300f
 
@@ -69,30 +74,79 @@ fun MainScreen() {
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = Color(0xFF141414),
+                contentColor = Color.White
+            ) {
                 NavigationBarItem(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.Filled.Movie, contentDescription = "Swipe") },
-                    label = { Text("Swipe") }
+                    icon = {
+                        Icon(
+                            Icons.Filled.Movie,
+                            contentDescription = "Swipe",
+                            tint = if (selectedTab == 0) Color(0xFFE50914) else Color(0xFFB3B3B3)
+                        )
+                    },
+                    label = {
+                        Text(
+                            "Swipe",
+                            color = if (selectedTab == 0) Color.White else Color(0xFFB3B3B3)
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = Color.Transparent
+                    )
                 )
+
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Filled.Bookmark, contentDescription = "Watchlist") },
-                    label = { Text("Watchlist") }
+                    icon = {
+                        Icon(
+                            Icons.Filled.Bookmark,
+                            contentDescription = "Watchlist",
+                            tint = if (selectedTab == 1) Color(0xFFE50914) else Color(0xFFB3B3B3)
+                        )
+                    },
+                    label = {
+                        Text(
+                            "Watchlist",
+                            color = if (selectedTab == 1) Color.White else Color(0xFFB3B3B3)
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = Color.Transparent
+                    )
                 )
+
                 NavigationBarItem(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    icon = { Icon(Icons.Filled.Search, contentDescription = "Search") },
-                    label = { Text("Search") }
+                    icon = {
+                        Icon(
+                            Icons.Filled.Search,
+                            contentDescription = "Search",
+                            tint = if (selectedTab == 2) Color(0xFFE50914) else Color(0xFFB3B3B3)
+                        )
+                    },
+                    label = {
+                        Text(
+                            "Search",
+                            color = if (selectedTab == 2) Color.White else Color(0xFFB3B3B3)
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = Color.Transparent
+                    )
                 )
-
             }
         }
     ) { innerPadding ->
+
+
         Box(modifier = Modifier.padding(innerPadding)) {
+
             if (selectedMovie != null) {
                 MovieDetailsScreen(
                     movie = selectedMovie!!,
@@ -107,6 +161,7 @@ fun MainScreen() {
             }
         }
     }
+
 }
 
 @Composable
@@ -147,12 +202,13 @@ fun MovieCard(movie: Movie, onSwipeLeft: () -> Unit, onSwipeRight: () -> Unit) {
 
     Box(
         modifier = Modifier
-            .width(320.dp)
-            .height(480.dp)
+            .width(330.dp)
+            .height(500.dp)
             .offset { IntOffset(offsetX.value.roundToInt(), 0) }
             .rotate(rotation)
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF1a1a1a))
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xFF1A1A1A)) // Netflix dark card
+            .shadow(20.dp, RoundedCornerShape(20.dp), clip = false)
             .pointerInput(movie.id) {
                 detectDragGestures(
                     onDragEnd = {
@@ -178,6 +234,7 @@ fun MovieCard(movie: Movie, onSwipeLeft: () -> Unit, onSwipeRight: () -> Unit) {
                 )
             }
     ) {
+
         AsyncImage(
             model = movie.posterUrl,
             contentDescription = movie.title,
@@ -185,13 +242,32 @@ fun MovieCard(movie: Movie, onSwipeLeft: () -> Unit, onSwipeRight: () -> Unit) {
             modifier = Modifier.fillMaxSize()
         )
 
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f)),
+                        startY = 300f
+                    )
+                )
+        )
+
+
         if (tintAlpha > 0f) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(if (isLeft) Color.Green.copy(alpha = tintAlpha) else Color.Red.copy(alpha = tintAlpha))
+                    .background(
+                        if (isLeft)
+                            Color(0xFFE50914).copy(alpha = tintAlpha)
+                        else
+                            Color.Green.copy(alpha = tintAlpha)
+                    )
             )
         }
+
 
         if (tintAlpha > 0.1f) {
             Icon(
@@ -205,19 +281,32 @@ fun MovieCard(movie: Movie, onSwipeLeft: () -> Unit, onSwipeRight: () -> Unit) {
             )
         }
 
+
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                .background(Color.Black.copy(alpha = 0.5f))
-                .padding(16.dp)
+                .padding(20.dp)
         ) {
-            Text(text = movie.title, color = Color.White, fontSize = 22.sp)
-            Text(text = movie.genre, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-            Text(text = "⭐ ${movie.rating}", color = Color.White, fontSize = 14.sp)
+            Text(
+                text = movie.title,
+                color = Color.White,
+                fontSize = 24.sp
+            )
+            Text(
+                text = movie.genre,
+                color = Color(0xFFB3B3B3),
+                fontSize = 14.sp
+            )
+            Text(
+                text = "⭐ ${movie.rating}",
+                color = Color.White,
+                fontSize = 14.sp
+            )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -233,4 +322,91 @@ fun MovieCardPreview() {
         onSwipeLeft = {},
         onSwipeRight = {}
     )
+}
+@Preview(showBackground = true)
+@Composable
+fun NavBarPreview() {
+    var selectedTab by remember { mutableIntStateOf(0) }
+
+    NavigationBar(
+        containerColor = Color(0xFF141414),
+        contentColor = Color.White
+    ) {
+        NavigationBarItem(
+            selected = selectedTab == 0,
+            onClick = { selectedTab = 0 },
+            icon = {
+                Icon(
+                    Icons.Filled.Movie,
+                    contentDescription = "Swipe",
+                    tint = if (selectedTab == 0) Color(0xFFE50914) else Color(0xFFB3B3B3)
+                )
+            },
+            label = {
+                Text(
+                    "Swipe",
+                    color = if (selectedTab == 0) Color.White else Color(0xFFB3B3B3)
+                )
+            },
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = Color.Transparent
+            )
+        )
+
+        NavigationBarItem(
+            selected = selectedTab == 1,
+            onClick = { selectedTab = 1 },
+            icon = {
+                Icon(
+                    Icons.Filled.Bookmark,
+                    contentDescription = "Watchlist",
+                    tint = if (selectedTab == 1) Color(0xFFE50914) else Color(0xFFB3B3B3)
+                )
+            },
+            label = {
+                Text(
+                    "Watchlist",
+                    color = if (selectedTab == 1) Color.White else Color(0xFFB3B3B3)
+                )
+            },
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = Color.Transparent
+            )
+        )
+
+        NavigationBarItem(
+            selected = selectedTab == 2,
+            onClick = { selectedTab = 2 },
+            icon = {
+                Icon(
+                    Icons.Filled.Search,
+                    contentDescription = "Search",
+                    tint = if (selectedTab == 2) Color(0xFFE50914) else Color(0xFFB3B3B3)
+                )
+            },
+            label = {
+                Text(
+                    "Search",
+                    color = if (selectedTab == 2) Color.White else Color(0xFFB3B3B3)
+                )
+            },
+            colors = NavigationBarItemDefaults.colors(
+                indicatorColor = Color.Transparent
+            )
+        )
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun NavBarScaffoldPreview() {
+    Scaffold(
+        bottomBar = { NavBarPreview() }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .background(Color(0xFF141414))
+        )
+    }
 }

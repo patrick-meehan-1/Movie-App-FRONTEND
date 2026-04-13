@@ -9,32 +9,68 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
-
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.cineswipe.ui.theme.CineSwipeTheme
+import androidx.compose.material3.ButtonDefaults
 
 
 
 
 @Composable
 fun LandingPage(onStartClick: () -> Unit) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color(0xFF141414)),
+        contentAlignment = Alignment.Center
     ) {
-        Text(text = "CineSwipe", fontSize = 32.sp)
-        Spacer(modifier = Modifier.height(10.dp))
-        Text(text = "Find your next movie", fontSize = 18.sp)
-        Spacer(modifier = Modifier.height(30.dp))
-        Button(onClick = onStartClick) {
-            Text(text = "Start")
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(24.dp)
+        ) {
+
+            Text(
+                text = "CineSwipe",
+                fontSize = 42.sp,
+                color = Color.White
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "Find your next movie",
+                fontSize = 18.sp,
+                color = Color(0xFFB3B3B3)
+            )
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Button(
+                onClick = onStartClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFE50914)
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .height(50.dp)
+            ) {
+                Text(text = "Start", fontSize = 18.sp, color = Color.White)
+            }
         }
     }
 }
 
-@Composable
+
+
 @Preview(showBackground = true)
+@Composable
 fun LandingPreview() {
-    LandingPage(onStartClick = {})
+    CineSwipeTheme {
+        LandingPage(onStartClick = {})
+    }
 }
+
