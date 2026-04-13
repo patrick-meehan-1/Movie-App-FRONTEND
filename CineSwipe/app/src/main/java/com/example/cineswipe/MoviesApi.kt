@@ -15,4 +15,10 @@ interface MoviesApi {
 
     @GET("watchlist/{userId}")
     suspend fun getWatchlist(@Path("userId") userId: String): List<WatchlistItem>
+
+
+    @GET("movies/search")
+    suspend fun searchMovies(@retrofit2.http.Query("query") query: String): List<Movie>
+
+
 }
