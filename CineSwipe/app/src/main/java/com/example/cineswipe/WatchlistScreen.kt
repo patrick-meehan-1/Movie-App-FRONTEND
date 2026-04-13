@@ -17,6 +17,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.tooling.preview.Preview
+
+
+@Preview(showBackground = true)
+@Composable
+fun WatchlistScreenPreview() {
+    val sampleMovies = listOf(
+        Movie(1, "Movie One", "Drama","https://via.placeholder.com/300", 7.8 ),
+        Movie(2, "Movie Two", "Action", "https://via.placeholder.com/300",8.2)
+    )
+
+    WatchlistScreen(allMovies = sampleMovies)
+}
+
+
+
 
 @Composable
 fun WatchlistScreen(allMovies: List<Movie>) {
@@ -78,4 +94,18 @@ fun WatchlistCard(movie: Movie) {
             Text(text = "⭐ ${movie.rating}", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WatchlistCardPreview() {
+    WatchlistCard(
+        movie = Movie(
+            id = 1,
+            title = "Preview Movie",
+            genre = "Action",
+            rating = 8.5,
+            posterUrl = "https://via.placeholder.com/300"
+        )
+    )
 }

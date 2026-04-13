@@ -12,6 +12,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.GlobalScope
+import androidx.compose.ui.tooling.preview.Preview
+
+@Preview(showBackground = true)
+@Composable
+fun SearchPreview() {
+    SearchScreen(onMovieClick = {})
+}
 
 
 @Composable

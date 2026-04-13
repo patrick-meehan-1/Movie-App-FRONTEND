@@ -31,7 +31,7 @@ import com.example.cineswipe.ui.theme.CineSwipeTheme
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-
+import androidx.compose.ui.tooling.preview.Preview
 const val USER_ID = "user1"
 const val SWIPE_THRESHOLD = 300f
 
@@ -57,6 +57,8 @@ fun MainScreen() {
     var selectedTab by remember { mutableIntStateOf(0) }
     var movies by remember { mutableStateOf<List<Movie>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    var selectedMovie by remember { mutableStateOf<Movie?>(null) }
+
 
     LaunchedEffect(Unit) {
         try {
@@ -91,8 +93,18 @@ fun MainScreen() {
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            if (selectedTab == 0) SwipeScreen(movies, isLoading)
-            else WatchlistScreen(movies)
+            if (selectedMovie != null) {
+                MovieDetailsScreen(
+                    movie = selectedMovie!!,
+                    onBack = { selectedMovie = null }
+                )
+            } else {
+                when (selectedTab) {
+                    0 -> SwipeScreen(movies, isLoading)
+                    1 -> WatchlistScreen(movies)
+                    2 -> SearchScreen(onMovieClick = { selectedMovie = it })
+                }
+            }
         }
     }
 }
@@ -205,4 +217,20 @@ fun MovieCard(movie: Movie, onSwipeLeft: () -> Unit, onSwipeRight: () -> Unit) {
             Text(text = "⭐ ${movie.rating}", color = Color.White, fontSize = 14.sp)
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MovieCardPreview() {
+    MovieCard(
+        movie = Movie(
+            id = 1,
+            title = "Preview Movie",
+            genre = "Action",
+            rating = 8.5,
+            posterUrl = "https://via.placeholder.com/300"
+        ),
+        onSwipeLeft = {},
+        onSwipeRight = {}
+    )
 }
