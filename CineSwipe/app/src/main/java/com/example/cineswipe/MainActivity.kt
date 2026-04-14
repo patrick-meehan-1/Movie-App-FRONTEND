@@ -323,9 +323,9 @@ fun MovieCardPreview() {
         onSwipeRight = {}
     )
 }
-@Preview(showBackground = true)
+
 @Composable
-fun NavBarPreview() {
+fun NavBarContent() {
     var selectedTab by remember { mutableIntStateOf(0) }
 
     NavigationBar(
@@ -396,17 +396,26 @@ fun NavBarPreview() {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun NavBarPreview() {
+    NavBarContent()
+}
+
 @Preview(showBackground = true)
 @Composable
 fun NavBarScaffoldPreview() {
-    Scaffold(
-        bottomBar = { NavBarPreview() }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .background(Color(0xFF141414))
-        )
+    CineSwipeTheme {
+        Scaffold(
+            bottomBar = { NavBarContent() }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(Color(0xFF141414))
+            )
+        }
     }
 }
