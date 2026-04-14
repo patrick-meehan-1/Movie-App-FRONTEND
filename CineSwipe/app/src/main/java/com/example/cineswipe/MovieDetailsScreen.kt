@@ -32,7 +32,8 @@ fun DetailsPreview() {
             title = "Preview Movie",
             genre = "Action",
             rating = 8.5,
-            posterUrl = "https://via.placeholder.com/300"
+            posterUrl = "https://via.placeholder.com/300",
+            description = "This is a sample description for the movie preview."
         ),
         onBack = {}
     )
@@ -110,7 +111,7 @@ fun MovieDetailsScreen(movie: Movie, onBack: () -> Unit) {
 
             Button(
                 onClick = {
-
+                    // Logic to add to watchlist could go here
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFE50914)
@@ -125,8 +126,23 @@ fun MovieDetailsScreen(movie: Movie, onBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            Text(
+                text = "Synopsis",
+                color = Color.White,
+                fontSize = 20.sp
+            )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Using null-safe check to prevent crash if description is null from backend
+            Text(
+                text = movie.description ?: "No description available.",
+                color = Color(0xFFB3B3B3),
+                fontSize = 16.sp,
+                lineHeight = 24.sp
+            )
+            
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
-

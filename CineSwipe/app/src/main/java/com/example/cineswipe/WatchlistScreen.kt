@@ -1,6 +1,7 @@
 package com.example.cineswipe
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -25,18 +26,18 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun WatchlistScreenPreview() {
     val sampleMovies = listOf(
-        Movie(1, "Movie One", "Drama","https://via.placeholder.com/300", 7.8 ),
-        Movie(2, "Movie Two", "Action", "https://via.placeholder.com/300",8.2)
+        Movie(1, "Movie One", "Drama","https://via.placeholder.com/300", 7.8, "Description one" ),
+        Movie(2, "Movie Two", "Action", "https://via.placeholder.com/300",8.2, "Description two")
     )
 
-    WatchlistScreen(allMovies = sampleMovies)
+    WatchlistScreen(allMovies = sampleMovies, onMovieClick = {})
 }
 
 
 
 
 @Composable
-fun WatchlistScreen(allMovies: List<Movie>) {
+fun WatchlistScreen(allMovies: List<Movie>, onMovieClick: (Movie) -> Unit) {
     var watchlistItems by remember { mutableStateOf<List<WatchlistItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
@@ -73,7 +74,7 @@ fun WatchlistScreen(allMovies: List<Movie>) {
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(watchlistMovies) { movie ->
-                    WatchlistCard(movie)
+                    WatchlistCard(movie = movie, onClick = { onMovieClick(movie) })
                 }
             }
         }
@@ -82,13 +83,14 @@ fun WatchlistScreen(allMovies: List<Movie>) {
 
 
 @Composable
-fun WatchlistCard(movie: Movie) {
+fun WatchlistCard(movie: Movie, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .aspectRatio(0.67f)
             .clip(RoundedCornerShape(16.dp))
             .shadow(12.dp, RoundedCornerShape(16.dp), clip = false)
             .background(Color(0xFF1A1A1A))
+            .clickable { onClick() }
     ) {
         AsyncImage(
             model = movie.posterUrl,
@@ -139,7 +141,9 @@ fun WatchlistCardPreview() {
             title = "Preview Movie",
             genre = "Action",
             rating = 8.5,
-            posterUrl = "https://via.placeholder.com/300"
-        )
+            posterUrl = "https://via.placeholder.com/300",
+            description = "A great movie description"
+        ),
+        onClick = {}
     )
 }

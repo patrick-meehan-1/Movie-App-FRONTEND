@@ -155,7 +155,7 @@ fun MainScreen() {
             } else {
                 when (selectedTab) {
                     0 -> SwipeScreen(movies, isLoading)
-                    1 -> WatchlistScreen(movies)
+                    1 -> WatchlistScreen(movies, onMovieClick = { selectedMovie = it })
                     2 -> SearchScreen(onMovieClick = { selectedMovie = it })
                 }
             }
@@ -317,7 +317,8 @@ fun MovieCardPreview() {
             title = "Preview Movie",
             genre = "Action",
             rating = 8.5,
-            posterUrl = "https://via.placeholder.com/300"
+            posterUrl = "https://via.placeholder.com/300",
+            description = "Sample Description"
         ),
         onSwipeLeft = {},
         onSwipeRight = {}

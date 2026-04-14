@@ -5,7 +5,8 @@ data class Movie(
     val title: String,
     val genre: String,
     val posterUrl: String,
-    val rating: Double
+    val rating: Double,
+    val description: String? = "No description available."
 )
 
 data class WatchlistItem(
@@ -13,4 +14,3 @@ data class WatchlistItem(
     val movieId: Int,
     val userId: String
 )
-
