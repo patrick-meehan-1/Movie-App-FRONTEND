@@ -176,7 +176,7 @@ fun SwipeScreen(movies: List<Movie>, isLoading: Boolean) {
             else -> key(movies[currentIndex].id) {
                 MovieCard(
                     movie = movies[currentIndex],
-                    onSwipeLeft = {
+                    onSwipeRight = {
                         scope.launch {
                             try {
                                 RetrofitClient.api.addToWatchlist(WatchlistItem(movieId = movies[currentIndex].id, userId = USER_ID))
@@ -184,7 +184,7 @@ fun SwipeScreen(movies: List<Movie>, isLoading: Boolean) {
                             currentIndex++
                         }
                     },
-                    onSwipeRight = { currentIndex++ }
+                    onSwipeLeft = { currentIndex++ }
                 )
             }
         }
@@ -198,7 +198,7 @@ fun MovieCard(movie: Movie, onSwipeLeft: () -> Unit, onSwipeRight: () -> Unit) {
 
     val tintAlpha = (kotlin.math.abs(offsetX.value) / SWIPE_THRESHOLD).coerceIn(0f, 0.6f)
     val rotation = (offsetX.value / 30f).coerceIn(-15f, 15f)
-    val isLeft = offsetX.value < 0
+    val isRight = offsetX.value > 0
 
     Box(
         modifier = Modifier
@@ -260,10 +260,10 @@ fun MovieCard(movie: Movie, onSwipeLeft: () -> Unit, onSwipeRight: () -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        if (isLeft)
-                            Color(0xFFE50914).copy(alpha = tintAlpha)
-                        else
+                        if (isRight)
                             Color.Green.copy(alpha = tintAlpha)
+                        else
+                            Color(0xFFE50914).copy(alpha = tintAlpha)
                     )
             )
         }
@@ -271,11 +271,11 @@ fun MovieCard(movie: Movie, onSwipeLeft: () -> Unit, onSwipeRight: () -> Unit) {
 
         if (tintAlpha > 0.1f) {
             Icon(
-                imageVector = if (isLeft) Icons.Filled.Bookmark else Icons.Filled.Close,
+                imageVector = if (isRight) Icons.Filled.Bookmark else Icons.Filled.Close,
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier
-                    .align(if (isLeft) Alignment.TopStart else Alignment.TopEnd)
+                    .align(if (isRight) Alignment.TopEnd else Alignment.TopStart)
                     .padding(16.dp)
                     .size(48.dp)
             )
