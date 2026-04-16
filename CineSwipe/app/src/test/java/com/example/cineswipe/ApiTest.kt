@@ -19,4 +19,26 @@ class ApiTest {
         // We don't assert isNotEmpty because "Inception" might not be in the DB, 
         // but we want to see if it throws an exception.
     }
+
+    @Test
+    fun testAddToWatchlist() = runBlocking {
+        val item = WatchlistItem(
+            movieId = 1,
+            userId = USER_ID
+        )
+
+        RetrofitClient.api.addToWatchlist(item)
+
+        // If no exception is thrown, passes
+        assert(true)
+    }
+
+    @Test
+    fun testGetWatchlist() = runBlocking {
+        val list = RetrofitClient.api.getWatchlist(USER_ID)
+        println("Watchlist items: ${list.size}")
+
+
+        assert(list.isNotEmpty())
+    }
 }
