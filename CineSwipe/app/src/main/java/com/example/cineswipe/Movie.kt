@@ -1,5 +1,7 @@
 package com.example.cineswipe
 
+import com.google.gson.annotations.SerializedName
+
 data class Movie(
     val id: Int,
     val title: String,
@@ -11,6 +13,8 @@ data class Movie(
 
 data class WatchlistItem(
     val id: Int = 0,
+    @SerializedName("MovieId")
     val movieId: Int,
+    @SerializedName("UserId")
     val userId: String
 )
